@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لديك رسالة جديدة!</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; background-color: #fdf6e3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; }
+        .card { background-color: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 600px; text-align: center; border: 1px solid #eee; }
+        #messageDisplay { font-size: 22px; color: #333; line-height: 1.8; white-space: pre-wrap; /* للحفاظ على الأسطر الجديدة */ }
+        .error { font-size: 20px; color: red; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <p id="messageDisplay"></p>
+    </div>
+
+    <script>
+        try {
+            // 1. قراءة الرابط الحالي للصفحة
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 2. استخراج الرسالة المشفرة من الرابط (من الجزء الذي اسمه data)
+            const encodedMessage = urlParams.get('data');
+
+            if (encodedMessage) {
+                // 3. فك تشفير الرسالة: نستخدم atob()‎ وهي عكس btoa()‎
+                const decodedMessage = decodeURIComponent(atob(encodedMessage));
+
+                // 4. عرض الرسالة التي تم فك تشفيرها في الصفحة
+                document.getElementById('messageDisplay').textContent = decodedMessage;
+            } else {
+                throw new Error("لا توجد رسالة لعرضها.");
+            }
+        } catch (e) {
+            // إذا حدث خطأ (مثلاً الرابط تالف)، نعرض رسالة خطأ
+            document.getElementById('messageDisplay').textContent = 'عذرًا، هذا الرابط غير صالح أو أن الرسالة فارغة.';
+            document.getElementById('messageDisplay').classList.add('error');
+        }
+    </script>
+</body>
+</html>
