@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رسالة في صورة</title>
+    <title>رسالة في صورة - إنشاء</title>
     <style>
         body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .container { background-color: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 90%; max-width: 500px; text-align: center; }
@@ -17,14 +17,16 @@
 <body>
     <div class="container">
         <h1>رسالة في صورة</h1>
-        <p>اكتب رسالتك، وسنحولها إلى رابط بصورة أنيقة.</p>
+        <p>اكتب رسالتك، وسنحولها إلى رابط مباشر.</p>
         <textarea id="messageInput" placeholder="اكتب رسالتك..."></textarea>
         <button id="createLinkBtn">حوّل إلى رابط</button>
         <div id="result">
-            <p>تم إنشاء الرابط! شاركه الآن:</p>
+            <p>تم إنشاء الرابط! انسخه وشاركه الآن:</p>
             <a href="" id="messageLink" target="_blank"></a>
         </div>
     </div>
+
+    <!-- === تم تعديل هذا الجزء بالكامل === -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const messageInput = document.getElementById('messageInput');
@@ -32,28 +34,26 @@
             const resultDiv = document.getElementById('result');
             const messageLink = document.getElementById('messageLink');
 
-            createLinkBtn.addEventListener('click', async () => {
+            createLinkBtn.addEventListener('click', () => {
                 const message = messageInput.value;
-                if (message.trim() === '') { alert('الرجاء كتابة رسالة أولاً!'); return; }
-                createLinkBtn.textContent = 'جاري الإنشاء...';
-                createLinkBtn.disabled = true;
-                try {
-                    const response = await fetch('/api/create-message', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: message }),
-                    });
-                    if (!response.ok) { throw new Error('حدث خطأ.'); }
-                    const data = await response.json();
-                    messageLink.href = data.link;
-                    messageLink.textContent = data.link;
-                    resultDiv.style.display = 'block';
-                } catch (error) {
-                    alert('عذرًا، حدث خطأ. الرجاء المحاولة مرة أخرى.');
-                } finally {
-                    createLinkBtn.textContent = 'حوّل إلى رابط';
-                    createLinkBtn.disabled = false;
+                if (message.trim() === '') {
+                    alert('الرجاء كتابة رسالة أولاً!');
+                    return;
                 }
+
+                // 1. تشفير الرسالة: نحول النص إلى شفرة Base64
+                // btoa() هي دالة JavaScript تقوم بهذا التشفير
+                const encodedMessage = btoa(encodeURIComponent(message));
+
+                // 2. إنشاء الرابط الكامل
+                // نأخذ رابط الموقع الحالي ونضيف اسم الصفحة الجديدة والرسالة المشفرة
+                const currentUrl = window.location.origin;
+                const link = `${currentUrl}/show.html?data=${encodedMessage}`;
+
+                // 3. عرض الرابط للمستخدم
+                messageLink.href = link;
+                messageLink.textContent = link;
+                resultDiv.style.display = 'block';
             });
         });
     </script>
